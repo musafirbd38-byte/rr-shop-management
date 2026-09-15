@@ -1,12 +1,1088 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RR Shop Management</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RR Shop Management</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Bengali",sans-serif;
+  background:#f4f6f8;
+  color:#222;
+}
+
+header{
+  background:#1f2937;
+  color:white;
+  padding:15px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+header h1{
+  margin:0;
+  font-size:22px;
+}
+
+header p{
+  margin:5px 0 0;
+  font-size:12px;
+  opacity:.8;
+}
+
+nav{
+  display:flex;
+  overflow-x:auto;
+  background:white;
+  border-bottom:1px solid #ddd;
+  position:sticky;
+  top:65px;
+  z-index:90;
+}
+
+nav button{
+  border:0;
+  background:white;
+  padding:13px 15px;
+  white-space:nowrap;
+  cursor:pointer;
+  font-size:14px;
+}
+
+nav button.active{
+  background:#2563eb;
+  color:white;
+}
+
+.container{
+  padding:15px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.card{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.card h3{
+  margin:0 0 8px;
+  font-size:13px;
+  color:#666;
+}
+
+.card .number{
+  font-size:24px;
+  font-weight:bold;
+  color:#2563eb;
+}
+
+.panel{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.panel h2{
+  margin-top:0;
+  font-size:18px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  margin-bottom:5px;
+  font-weight:bold;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:14px;
+  background:white;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+button{
+  border:0;
+  border-radius:7px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.btn{
+  background:#2563eb;
+  color:white;
+}
+
+.btn-success{
+  background:#16a34a;
+  color:white;
+}
+
+.btn-danger{
+  background:#dc2626;
+  color:white;
+}
+
+.btn-warning{
+  background:#d97706;
+  color:white;
+}
+
+.btn-secondary{
+  background:#6b7280;
+  color:white;
+}
+
+.btn-light{
+  background:#e5e7eb;
+  color:#111;
+}
+
+.button-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+
+th,td{
+  border-bottom:1px solid #eee;
+  padding:9px;
+  text-align:left;
+  font-size:13px;
+}
+
+th{
+  background:#f3f4f6;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:11px;
+}
+
+.badge-danger{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.badge-success{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.badge-warning{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.search{
+  margin-bottom:10px;
+}
+
+.invoice-item{
+  border:1px solid #ddd;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:8px;
+}
+
+.invoice-item-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr auto;
+  gap:8px;
+  align-items:end;
+}
+
+@media(max-width:700px){
+  .invoice-item-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .invoice-item-grid > div:first-child{
+    grid-column:1/-1;
+  }
+
+  .invoice-item-grid > div:last-child{
+    grid-column:1/-1;
+  }
+}
+
+.total-box{
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  padding:15px;
+  border-radius:8px;
+  margin-top:12px;
+}
+
+.total-box div{
+  display:flex;
+  justify-content:space-between;
+  padding:4px 0;
+}
+
+.low-stock{
+  color:#dc2626;
+  font-weight:bold;
+}
+
+.empty{
+  text-align:center;
+  color:#777;
+  padding:20px;
+}
+
+.small{
+  font-size:12px;
+  color:#666;
+}
+
+hr{
+  border:0;
+  border-top:1px solid #eee;
+  margin:15px 0;
+}
+
+@media print{
+  body *{
+    visibility:hidden;
+  }
+
+  #printArea,
+  #printArea *{
+    visibility:visible;
+  }
+
+  #printArea{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+  }
+
+  .no-print{
+    display:none!important;
+  }
+}
+</style>
 </head>
+
 <body>
+
+<header>
   <h1>RR Shop Management</h1>
-  <p>App is working!</p>
-</body>
-</html>
+  <p>দোকান পরিচালনা ও হিসাব ব্যবস্থাপনা</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('dashboard',this)">Dashboard</button>
+  <button onclick="showSection('products',this)">Products</button>
+  <button onclick="showSection('purchases',this)">Purchase</button>
+  <button onclick="showSection('invoices',this)">Invoice</button>
+  <button onclick="showSection('invoiceList',this)">Sales</button>
+  <button onclick="showSection('reports',this)">Reports</button>
+  <button onclick="showSection('backup',this)">Backup</button>
+</nav>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section active">
+
+  <div class="card-grid">
+
+    <div class="card">
+      <h3>মোট পণ্য</h3>
+      <div class="number" id="dashProducts">0</div>
+    </div>
+
+    <div class="card">
+      <h3>মোট স্টক</h3>
+      <div class="number" id="dashStock">0</div>
+    </div>
+
+    <div class="card">
+      <h3>মোট বিক্রি</h3>
+      <div class="number" id="dashSales">৳0</div>
+    </div>
+
+    <div class="card">
+      <h3>মোট লাভ</h3>
+      <div class="number" id="dashProfit">৳0</div>
+    </div>
+
+    <div class="card">
+      <h3>স্টকের মূল্য</h3>
+      <div class="number" id="dashStockValue">৳0</div>
+    </div>
+
+    <div class="card">
+      <h3>মোট ক্রয়</h3>
+      <div class="number" id="dashPurchases">৳0</div>
+    </div>
+
+    <div class="card">
+      <h3>ইনভয়েস</h3>
+      <div class="number" id="dashInvoices">0</div>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2>কম স্টকের পণ্য</h2>
+    <div id="lowStockDashboard"></div>
+  </div>
+
+</section>
+
+
+<!-- PRODUCTS -->
+<section id="products" class="section">
+
+  <div class="panel">
+    <h2>নতুন পণ্য যোগ করুন</h2>
+
+    <div class="form-grid">
+
+      <div>
+        <label>পণ্যের নাম</label>
+        <input id="productName" placeholder="যেমন: খাতা">
+      </div>
+
+      <div>
+        <label>ক্যাটাগরি</label>
+        <input id="productCategory" placeholder="যেমন: Stationery">
+      </div>
+
+      <div>
+        <label>ইউনিট</label>
+        <input id="productUnit" placeholder="যেমন: পিস">
+      </div>
+
+      <div>
+        <label>প্রাথমিক স্টক</label>
+        <input id="productStock" type="number" min="0">
+      </div>
+
+      <div>
+        <label>ক্রয় মূল্য</label>
+        <input id="productBuyPrice" type="number" min="0">
+      </div>
+
+      <div>
+        <label>বিক্রয় মূল্য</label>
+        <input id="productSellPrice" type="number" min="0">
+      </div>
+
+      <div>
+        <label>সর্বনিম্ন স্টক</label>
+        <input id="productMinStock" type="number" min="0" value="5">
+      </div>
+
+    </div>
+
+    <div class="button-row">
+      <button class="btn-success" onclick="addProduct()">পণ্য যোগ করুন</button>
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <h2>পণ্য তালিকা</h2>
+
+    <input class="search"
+           id="productSearch"
+           placeholder="পণ্যের নাম দিয়ে খুঁজুন..."
+           oninput="renderProducts()">
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>নাম</th>
+            <th>ক্যাটাগরি</th>
+            <th>স্টক</th>
+            <th>ক্রয়</th>
+            <th>বিক্রয়</th>
+            <th>ইউনিট</th>
+            <th>স্ট্যাটাস</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody id="productTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- PURCHASE -->
+<section id="purchases" class="section">
+
+  <div class="panel">
+
+    <h2>নতুন পণ্য ক্রয়</h2>
+
+    <div class="form-grid">
+
+      <div>
+        <label>পণ্য</label>
+        <select id="purchaseProduct"></select>
+      </div>
+
+      <div>
+        <label>পরিমাণ</label>
+        <input id="purchaseQty" type="number" min="1">
+      </div>
+
+      <div>
+        <label>প্রতি ইউনিট ক্রয় মূল্য</label>
+        <input id="purchasePrice" type="number" min="0">
+      </div>
+
+      <div>
+        <label>পরিবহন / অন্যান্য খরচ</label>
+        <input id="purchaseExtra" type="number" min="0" value="0">
+      </div>
+
+    </div>
+
+    <div class="button-row">
+      <button class="btn-success" onclick="addPurchase()">ক্রয় সংরক্ষণ করুন</button>
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <h2>ক্রয়ের তালিকা</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>তারিখ</th>
+            <th>পণ্য</th>
+            <th>পরিমাণ</th>
+            <th>ক্রয় মূল্য</th>
+            <th>অতিরিক্ত খরচ</th>
+            <th>মোট</th>
+          </tr>
+        </thead>
+
+        <tbody id="purchaseTable"></tbody>
+
+      </table>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- INVOICE -->
+<section id="invoices" class="section">
+
+  <div class="panel">
+
+    <h2>নতুন ইনভয়েস</h2>
+
+    <div class="form-grid">
+
+      <div>
+        <label>কাস্টমারের নাম</label>
+        <input id="customerName" placeholder="নাম">
+      </div>
+
+      <div>
+        <label>মোবাইল</label>
+        <input id="customerPhone" placeholder="মোবাইল নম্বর">
+      </div>
+
+      <div>
+        <label>ঠিকানা</label>
+        <input id="customerAddress" placeholder="ঠিকানা">
+      </div>
+
+      <div>
+        <label>তারিখ</label>
+        <input id="invoiceDate" type="date">
+      </div>
+
+    </div>
+
+    <hr>
+
+    <h3>পণ্যের তালিকা</h3>
+
+    <div id="invoiceItems"></div>
+
+    <div class="button-row">
+      <button class="btn-light" onclick="addInvoiceItem()">+ পণ্য যোগ করুন</button>
+    </div>
+
+    <div class="total-box">
+
+      <div>
+        <span>মোট বিক্রি</span>
+        <strong id="invoiceTotal">৳0</strong>
+      </div>
+
+      <div>
+        <span>মোট ক্রয় মূল্য</span>
+        <strong id="invoiceCost">৳0</strong>
+      </div>
+
+      <div>
+        <span>লাভ</span>
+        <strong id="invoiceProfit">৳0</strong>
+      </div>
+
+    </div>
+
+    <div class="button-row">
+      <button class="btn-success" onclick="saveInvoice()">ইনভয়েস সংরক্ষণ করুন</button>
+      <button class="btn-secondary" onclick="clearInvoice()">পরিষ্কার করুন</button>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SALES -->
+<section id="invoiceList" class="section">
+
+  <div class="panel">
+
+    <h2>বিক্রয় / ইনভয়েস তালিকা</h2>
+
+    <input
+      class="search"
+      id="invoiceSearch"
+      placeholder="কাস্টমারের নাম / ফোন / ইনভয়েস নম্বর"
+      oninput="renderInvoices()">
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>ইনভয়েস</th>
+            <th>তারিখ</th>
+            <th>কাস্টমার</th>
+            <th>মোট</th>
+            <th>লাভ</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+
+        <tbody id="invoiceTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- REPORTS -->
+<section id="reports" class="section">
+
+  <div class="panel">
+
+    <h2>রিপোর্ট</h2>
+
+    <div class="card-grid">
+
+      <div class="card">
+        <h3>মোট বিক্রয়</h3>
+        <div class="number" id="reportSales">৳0</div>
+      </div>
+
+      <div class="card">
+        <h3>মোট লাভ</h3>
+        <div class="number" id="reportProfit">৳0</div>
+      </div>
+
+      <div class="card">
+        <h3>মোট ক্রয়</h3>
+        <div class="number" id="reportPurchase">৳0</div>
+      </div>
+
+      <div class="card">
+        <h3>মোট ইনভয়েস</h3>
+        <div class="number" id="reportInvoiceCount">0</div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <h2>স্টক রিপোর্ট</h2>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>পণ্য</th>
+            <th>স্টক</th>
+            <th>ক্রয় মূল্য</th>
+            <th>স্টক মূল্য</th>
+            <th>বিক্রয় মূল্য</th>
+            <th>সম্ভাব্য বিক্রয়</th>
+          </tr>
+        </thead>
+
+        <tbody id="stockReportTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- BACKUP -->
+<section id="backup" class="section">
+
+  <div class="panel">
+
+    <h2>Backup & Restore</h2>
+
+    <p>
+      তোমার পণ্য, ক্রয় এবং ইনভয়েসের তথ্য একটি JSON ফাইলে Backup করে রাখতে পারবে।
+    </p>
+
+    <div id="backupStatus"></div>
+
+    <div class="button-row">
+
+      <button class="btn" onclick="downloadBackup()">
+        Backup Download
+      </button>
+
+      <button class="btn-success" onclick="shareBackup()">
+        Backup Share
+      </button>
+
+      <button class="btn-warning" onclick="document.getElementById('restoreFile').click()">
+        Restore Backup
+      </button>
+
+      <input
+        type="file"
+        id="restoreFile"
+        accept=".json,application/json"
+        style="display:none"
+        onchange="restoreBackup(event)">
+
+    </div>
+
+    <hr>
+
+    <p class="small">
+      গুরুত্বপূর্ণ: Restore করলে বর্তমান ডেটা Backup-এর ডেটা দিয়ে পরিবর্তিত হবে।
+    </p>
+
+  </div>
+
+</section>
+
+</div>
+
+
+<!-- PRINT AREA -->
+<div id="printArea" style="display:none;"></div>
+
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+let products = JSON.parse(
+  localStorage.getItem("rr_products") || "[]"
+);
+
+let purchases = JSON.parse(
+  localStorage.getItem("rr_purchases") || "[]"
+);
+
+let invoices = JSON.parse(
+  localStorage.getItem("rr_invoices") || "[]"
+);
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function saveData(){
+
+  localStorage.setItem(
+    "rr_products",
+    JSON.stringify(products)
+  );
+
+  localStorage.setItem(
+    "rr_purchases",
+    JSON.stringify(purchases)
+  );
+
+  localStorage.setItem(
+    "rr_invoices",
+    JSON.stringify(invoices)
+  );
+
+}
+
+
+/* =========================
+   UTILITY
+========================= */
+
+function money(value){
+
+  return "৳" + Number(value || 0).toLocaleString(
+    "en-BD",
+    {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+function today(){
+
+  return new Date()
+    .toISOString()
+    .split("T")[0];
+
+}
+
+
+function generateId(prefix){
+
+  return prefix +
+    Date.now() +
+    Math.floor(Math.random()*1000);
+
+}
+
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showSection(id,button){
+
+  document
+    .querySelectorAll(".section")
+    .forEach(section=>{
+      section.classList.remove("active");
+    });
+
+  const section=document.getElementById(id);
+
+  if(section){
+    section.classList.add("active");
+  }
+
+  document
+    .querySelectorAll("nav button")
+    .forEach(btn=>{
+      btn.classList.remove("active");
+    });
+
+  if(button){
+    button.classList.add("active");
+  }
+
+  refreshAll();
+
+}
+
+
+/* =========================
+   PRODUCTS
+========================= */
+
+function addProduct(){
+
+  const name=document
+    .getElementById("productName")
+    .value.trim();
+
+  const category=document
+    .getElementById("productCategory")
+    .value.trim();
+
+  const unit=document
+    .getElementById("productUnit")
+    .value.trim() || "পিস";
+
+  const stock=Number(
+    document.getElementById("productStock").value
+  );
+
+  const buyPrice=Number(
+    document.getElementById("productBuyPrice").value
+  );
+
+  const sellPrice=Number(
+    document.getElementById("productSellPrice").value
+  );
+
+  const minStock=Number(
+    document.getElementById("productMinStock").value
+  );
+
+
+  if(!name){
+
+    alert("পণ্যের নাম দিন।");
+    return;
+
+  }
+
+
+  if(stock<0 || buyPrice<0 || sellPrice<0){
+
+    alert("মূল্য বা স্টক সঠিকভাবে দিন।");
+    return;
+
+  }
+
+
+  const duplicate=products.find(
+    p=>p.name.toLowerCase()===name.toLowerCase()
+  );
+
+
+  if(duplicate){
+
+    alert("এই নামে পণ্য আগে থেকেই আছে।");
+    return;
+
+  }
+
+
+  products.push({
+
+    id:generateId("P"),
+
+    name:name,
+
+    category:category,
+
+    unit:unit,
+
+    stock:stock,
+
+    buyPrice:buyPrice,
+
+    sellPrice:sellPrice,
+
+    minStock:minStock,
+
+    createdAt:new Date().toISOString()
+
+  });
+
+
+  saveData();
+
+  clearProductForm();
+
+  refreshAll();
+
+  alert("পণ্য সফলভাবে যোগ হয়েছে।");
+
+}
+
+
+function clearProductForm(){
+
+  document.getElementById("productName").value="";
+  document.getElementById("productCategory").value="";
+  document.getElementById("productUnit").value="";
+  document.getElementById("productStock").value="";
+  document.getElementById("productBuyPrice").value="";
+  document.getElementById("productSellPrice").value="";
+  document.getElementById("productMinStock").value="5";
+
+}
+
+
+function deleteProduct(id){
+
+  const product=products.find(p=>p.id===id);
+
+  if(!product) return;
+
+  const ok=confirm(
+    `আপনি কি "${product.name}" পণ্যটি মুছে ফেলতে চান?`
+  );
+
+  if(!ok) return;
+
+  products=products.filter(p=>p.id!==id);
+
+  saveData();
+
+  refreshAll();
+
+}
+
+
+function renderProducts(){
+
+  const tbody=document.getElementById("productTable");
+
+  const search=(
+    document.getElementById("productSearch")?.value || ""
+  ).toLowerCase();
+
+  const filtered=products.filter(p=>
+    p.name.toLowerCase().includes(search) ||
+    (p.category || "").toLowerCase().includes(search)
+  );
+
+
+  if(filtered.length===0){
+
+    tbody.innerHTML=
+      `<tr><td colspan="8" class="empty">কোনো পণ্য পাওয়া যায়নি</td></tr>`;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML=filtered.map(p=>{
+
+    let status="ঠিক আছে";
+    let badge="badge-success";
+
+    if(Number(p.stock)<=Number(p.minStock)){
+
+      status="স্টক কম";
+      badge="badge-danger";
+
+    }
+
+
+    return `
+
+      <tr>
+
+        <td><strong>${escapeHtml(p.name)}</strong></td>
+
+        <td>${escapeHtml(p.category || "-")}</td>
+
+        <td class="${Number(p.stock)<=Number(p.minStock) ? "low-stock":""}">
+          ${p.stock} ${escapeHtml(p.unit)}
+        </td>
+
+        <td>${money(p.buyPrice)}</td>
+
+        <td>${money(p.sellPrice)}</td>
+
+        <td>${escapeHtml(p.unit)}</td>
+
+        <td>
+          <span class="badge ${badge}">
+            ${status}
+          </span>
+        </td>
+
+        <td>
+          <button
+            class="btn-danger"
+            onclick="deleteProduct
