@@ -34,12 +34,12 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
+      - name: Build Release APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleRelease
 
-      - name: Upload APK
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: RR-Shop-Management-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: RR-Shop-Management-Release-APK
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
