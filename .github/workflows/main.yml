@@ -1,4 +1,4 @@
-name: Build RR Shop Management APK
+name: Build and Diagnose RR Shop Management APK
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -50,15 +50,17 @@ jobs:
             -keypass android \
             -dname "CN=RR Shop Management, OU=RR, O=RR, L=Khulna, ST=Khulna, C=BD"
 
-      - name: Find Android build tools
+      - name: Find Android Build Tools
         run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
           echo "BUILD_TOOLS=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)" >> $GITHUB_ENV
 
       - name: Zipalign APK
         run: |
           $BUILD_TOOLS/zipalign -p -f 4 \
-          android/app/build/outputs/apk/release/app-release-unsigned.apk \
-          android/app/build/outputs/apk/release/app-release-aligned.apk
+            android/app/build/outputs/apk/release/app-release-unsigned.apk \
+            android/app/build/outputs/apk/release/app-release-aligned.apk
 
       - name: Sign APK
         run: |
@@ -69,10 +71,28 @@ jobs:
             --out android/app/build/outputs/apk/release/app-release.apk \
             android/app/build/outputs/apk/release/app-release-aligned.apk
 
-      - name: Verify APK signature
+      - name: Verify APK
         run: |
           $BUILD_TOOLS/apksigner verify --verbose \
-          android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Inspect APK
+        run: |
+          echo "===== APK INFORMATION ====="
+          $ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer apk summary \
+            android/app/build/outputs/apk/release/app-release.apk
+
+          echo "===== PACKAGE ====="
+          $ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer manifest application-id \
+            android/app/build/outputs/apk/release/app-release.apk
+
+          echo "===== MIN SDK ====="
+          $ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer manifest min-sdk \
+            android/app/build/outputs/apk/release/app-release.apk
+
+          echo "===== TARGET SDK ====="
+          $ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer manifest target-sdk \
+            android/app/build/outputs/apk/release/app-release.apk
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
