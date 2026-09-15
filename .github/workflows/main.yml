@@ -38,8 +38,44 @@ jobs:
         working-directory: android
         run: ./gradlew assembleRelease
 
-      - name: Upload Release APK
+      - name: Create signing key
+        run: |
+          keytool -genkeypair -v \
+            -keystore rr-test.keystore \
+            -alias rrtest \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=RR Shop Management, OU=RR, O=RR, L=Khulna, ST=Khulna, C=BD"
+
+      - name: Find Android build tools
+        run: |
+          echo "BUILD_TOOLS=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)" >> $GITHUB_ENV
+
+      - name: Zipalign APK
+        run: |
+          $BUILD_TOOLS/zipalign -p -f 4 \
+          android/app/build/outputs/apk/release/app-release-unsigned.apk \
+          android/app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Sign APK
+        run: |
+          $BUILD_TOOLS/apksigner sign \
+            --ks rr-test.keystore \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out android/app/build/outputs/apk/release/app-release.apk \
+            android/app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Verify APK signature
+        run: |
+          $BUILD_TOOLS/apksigner verify --verbose \
+          android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: RR-Shop-Management-Release-APK
-          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          name: RR-Shop-Management-Signed-APK
+          path: android/app/build/outputs/apk/release/app-release.apk
